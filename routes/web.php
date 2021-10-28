@@ -39,6 +39,11 @@ Route::get('/set_env/dev', function() {
     dd($output);
 });
 
+Route::get('/generate_key', function() {
+    $output = [];
+    dd($output);
+});
+
 Route::get('/dashboard', function () {
     return view('content/dashboard');
 });
