@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DeviceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SensorController as SensorController;
 
@@ -32,7 +34,7 @@ Route::get('/set_env/prod', function() {
 Route::get('/set_env/dev', function() {
     $output = [];
     \Artisan::call('env:set APP_NAME "LVDP"', $output);
-    \Artisan::call('env:set APP_ENV "development"', $output);
+    \Artisan::call('env:set APP_ENV "local"', $output);
     \Artisan::call('env:set DB_DATABASE "lvdp"', $output);
     \Artisan::call('env:set DB_USERNAME "admin"', $output);
     \Artisan::call('env:set DB_PASSWORD "pass_admin"', $output);
@@ -51,10 +53,16 @@ Route::get('/', function () {
     return view('content/dashboard');
 });
 
-Route::get('/login', function () {
-    return view('auth/login');
+Route::get('/login', [AuthController::class, 'getLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'postLogin']);
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/devices', [DeviceController::class, 'getDevices']);
+
+Route::get('/hardware', function () {
+    return view('hardware');
 });
 
-Route::get('/devices', function () {
-    return view('devices');
+Route::get('/monitoring', function () {
+    return view('monitoring');
 });

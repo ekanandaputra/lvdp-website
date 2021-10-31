@@ -11,15 +11,13 @@
 <body class="">
     <div class="w-full h-40 bg-primary">
     </div>
-    <div class="flex justify-center w-full -mt-16">
+    <div class="flex justify-center w-full -mt-12">
         <div class="w-3/6 bg-white rounded-md px-6 py-3 shadow-md">
             <div class="flex flex-col">
                 <h1 class="text-3xl font-semibold">
                     Selamat Datang,
                 </h1>
-                <p class="text-xl mb-3">Ekananda Sulistyo Putra</p>
-                <a href="/logout"
-                    class="w-24 px-3 py-1 rounded-md shadow-md bg-red-600 flex justify-center text-white">Logout</a>
+                <p class="text-xl">Ekananda Sulistyo Putra</p>
             </div>
         </div>
     </div>
