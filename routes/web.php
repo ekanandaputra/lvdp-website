@@ -58,6 +58,7 @@ Route::post('/login', [AuthController::class, 'postLogin']);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/devices', [DeviceController::class, 'getDevices']);
+Route::post('/devices', [DeviceController::class, 'patchDevice'])->name('devices.patch');
 
 Route::get('/hardware', function () {
     return view('hardware');

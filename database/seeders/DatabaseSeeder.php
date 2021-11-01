@@ -22,7 +22,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('devices')->insert([
-        	'uuid' => '1231232'        
+        	'uuid' => 'a012201d',
+            'location' => 'Gedung AJ LT 1',
+            'description' => 'Perangkat Untuk Demo'      
         ]);
 
     }
