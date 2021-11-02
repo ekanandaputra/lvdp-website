@@ -57,6 +57,17 @@ class SensorController extends Controller
         return view('content.table', ['sensor' => $sensor, 'title' => $title]);
     }
 
+    public function getData($device_uuid)
+    {
+        $sensor = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->first();
+        return response()->json($sensor, 200);
+    }   
+
+    public function getDashboard()
+    {
+        return view('monitoring');
+    }
+    
     public function sensorData($param, $device_id)
     {
         $sensor = DB::table('sensors')->where('device_id', '=', $device_id)->orderBy('id', 'DESC')->first();

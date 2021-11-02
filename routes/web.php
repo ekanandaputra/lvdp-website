@@ -59,11 +59,9 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/devices', [DeviceController::class, 'getDevices']);
 Route::post('/devices', [DeviceController::class, 'patchDevice'])->name('devices.patch');
+Route::get('/monitoring/{device_uuid}/sensor', [SensorController::class, 'getData']);
+Route::get('/monitoring/{device_uuid}', [SensorController::class, 'getDashboard']);
 
 Route::get('/hardware', function () {
     return view('hardware');
-});
-
-Route::get('/monitoring', function () {
-    return view('monitoring');
 });
