@@ -46,7 +46,7 @@
             <div class="flex flex-col border border-gray-50 rounded-md shadow-md gap-3">
                 <div class="flex flex-row items-center justify-center mt-3 px-3 mb-1">
                     <h1 class="text-xl font-semibold flex-grow"> {{ $device->location }} </h1>
-                    <a href="/monitoring/{{ $device->uuid }}"
+                    <a href="/dashboard/{{ $device->uuid }}"
                         class="bg-primary py-1 px-3 text-white rounded-md flex-none text-sm">
                         Lihat Detail
                     </a>

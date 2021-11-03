@@ -9,13 +9,15 @@ use Carbon\Carbon;
 
 class SensorController extends Controller
 {
+
+    public function getLocationName($device_uuid)
+    {
+        $device = DB::table('devices')->where('uuid', '=', $device_uuid)->first();
+        return $device->location;
+    }
+
     public function storeSensors(Request $request)
     {
-        // $this->validate($request,[
-        // 	'nama' => 'required',
-        // 	'alamat' => 'required'
-        // ]);
- 
         $sensor = Sensor::create([
             'voltage_r' => $request->voltage_r,
             'voltage_s' => $request->voltage_s,
@@ -41,13 +43,6 @@ class SensorController extends Controller
         }
     }
 
-    public function monitoringTable()
-    {
-        $sensor = DB::table('sensors')->orderBy('id', 'DESC')->paginate(40);
-        $title="Monitoring LVDP - Tabel";
-        return view('content.table', ['sensor' => $sensor, 'title' => $title]);
-    }
-
     public function monitoringTableFilter(Request $request)
     {
         $start_date = $request->input('start_date');
@@ -63,103 +58,28 @@ class SensorController extends Controller
         return response()->json($sensor, 200);
     }   
 
-    public function getDashboard()
+    public function getDataChart($device_uuid)
     {
-        return view('monitoring');
-    }
-    
-    public function sensorData($param, $device_id)
+        $sensor = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->limit(5)->get();
+        return response()->json($sensor, 200);
+    }   
+
+    public function getDashboard($device_uuid)
     {
-        $sensor = DB::table('sensors')->where('device_id', '=', $device_id)->orderBy('id', 'DESC')->first();
-        switch ($param) {
-            case "vr":
-                return $sensor->voltage_r." V";
-            case "vs":
-                return $sensor->voltage_s." V";
-            case "vt":
-                return $sensor->voltage_t." V";
-            case "ir":
-                return $sensor->current_r." A";
-            case "is":
-                return $sensor->current_s." A";
-            case "it":
-                return $sensor->current_t." A";
-            case "pr":
-                return $sensor->power_r." Watt";
-            case "ps":
-                return $sensor->power_s." Watt";
-            case "pt":
-                return $sensor->power_t." Watt";
-            case "sr":
-                return $sensor->apparent_power_r." VA";
-            case "ss":
-                return $sensor->apparent_power_s." VA";
-            case "st":
-                return $sensor->apparent_power_t." VA";
-            case "pfr":
-                return $sensor->power_factor_r;
-            case "pfs":
-                return $sensor->power_factor_s;
-            case "pft":
-                return $sensor->power_factor_t;
-            default:
-        }
+        return view('monitoring.content.dashboard', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
     }
 
-    public function monitoringChart()
+    public function getTable($device_uuid)
     {
-        $date = array();
-        $voltage_r = array();
-        $voltage_s = array();
-        $voltage_t = array();
-        $current_r = array();
-        $current_s = array();
-        $current_t = array();
-        $power_r = array();
-        $power_s = array();
-        $power_t = array();
-        $apparent_power_r = array();
-        $apparent_power_s = array();
-        $apparent_power_t = array();
-        $power_factor_r = array();
-        $power_factor_s = array();
-        $power_factor_t = array();
-
-        $query = DB::table('sensors')->orderBy('id', 'DESC')->limit(40)->get();
-        foreach ($query as $data) {
-            array_push($date, $data->created_at);
-            array_push($voltage_r, $data->voltage_r);
-            array_push($voltage_s, $data->voltage_s);
-            array_push($voltage_t, $data->voltage_t);
-            array_push($current_r, $data->current_r);
-            array_push($current_s, $data->current_s);
-            array_push($current_t, $data->current_t);
-            array_push($power_r, $data->power_r);
-            array_push($power_s, $data->power_s);
-            array_push($power_t, $data->power_t);
-            array_push($apparent_power_r, $data->apparent_power_r);
-            array_push($apparent_power_s, $data->apparent_power_s);
-            array_push($apparent_power_t, $data->apparent_power_t);
-            array_push($power_factor_r, $data->power_factor_r);
-            array_push($power_factor_s, $data->power_factor_s);
-            array_push($power_factor_t, $data->power_factor_t);
-        }
-        return view('content.chart')
-        ->with('date', json_encode(array_reverse($date), JSON_NUMERIC_CHECK))
-        ->with('voltage_r', json_encode(array_reverse($voltage_r), JSON_NUMERIC_CHECK))
-        ->with('voltage_s', json_encode(array_reverse($voltage_s), JSON_NUMERIC_CHECK))
-        ->with('voltage_t', json_encode(array_reverse($voltage_t), JSON_NUMERIC_CHECK))
-        ->with('current_r', json_encode(array_reverse($current_r), JSON_NUMERIC_CHECK))
-        ->with('current_s', json_encode(array_reverse($current_s), JSON_NUMERIC_CHECK))
-        ->with('current_t', json_encode(array_reverse($current_t), JSON_NUMERIC_CHECK))
-        ->with('power_r', json_encode(array_reverse($power_r), JSON_NUMERIC_CHECK))
-        ->with('power_s', json_encode(array_reverse($power_s), JSON_NUMERIC_CHECK))
-        ->with('power_t', json_encode(array_reverse($power_t), JSON_NUMERIC_CHECK))
-        ->with('apparent_power_r', json_encode(array_reverse($apparent_power_r), JSON_NUMERIC_CHECK))
-        ->with('apparent_power_s', json_encode(array_reverse($apparent_power_s), JSON_NUMERIC_CHECK))
-        ->with('apparent_power_t', json_encode(array_reverse($apparent_power_t), JSON_NUMERIC_CHECK))
-        ->with('power_factor_r', json_encode(array_reverse($power_factor_r), JSON_NUMERIC_CHECK))
-        ->with('power_factor_s', json_encode(array_reverse($power_factor_s), JSON_NUMERIC_CHECK))
-        ->with('power_factor_t', json_encode(array_reverse($power_factor_t), JSON_NUMERIC_CHECK));
+        $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
+        $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
+        $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
+        return view('monitoring.content.table', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
     }
+
+    public function getChart($device_uuid)
+    {
+        return view('monitoring.content.chart', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+    }
+
 }
