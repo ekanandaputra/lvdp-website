@@ -21,6 +21,14 @@ Route::get('/chart', [SensorController::class, 'monitoringChart']);
 Route::get('/sensor/{param}/{device_id}', [SensorController::class, 'sensorData']);
 Route::post('/filter', [SensorController::class, 'monitoringTableFilter']);
 
+Route::get('/rollback', function() {
+    $output = [];
+    \Artisan::call('db:wipe', $output);
+    \Artisan::call('migrate', $output);
+    \Artisan::call('db:seed', $output);
+    dd($output);
+});
+
 Route::get('/set_env/prod', function() {
     $output = [];
     \Artisan::call('env:set APP_NAME "LVDP"', $output);
