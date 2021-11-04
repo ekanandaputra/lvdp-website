@@ -61,8 +61,12 @@ Route::get('/', function () {
     return view('content/dashboard');
 });
 
+Route::get('/landing', function () {
+    return view('landing');
+});
+
 Route::get('/login', [AuthController::class, 'getLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'postLogin']);
+Route::post('/login', [AuthController::class, 'postLogin'])->name('post.login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/devices', [DeviceController::class, 'getDevices']);

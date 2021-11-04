@@ -1,6 +1,34 @@
 @extends('monitoring/layout')
 @section('content')
+
 <div class="content px-32 py-3 flex flex-col gap-6">
+    <div
+        class="container-table flex flex-col gap-3 rounded rounded-md shadow-lg p-3 border border-gray-200 overflow-x-auto">
+        <h1 class="text-2xl font-semibold text-black">
+            Form Filter
+        </h1>
+        <div class="flex flex-row gap-3">
+            <div class="flex flex-col flex-1">
+                <label class="mb-1 text-black text-left"> Tanggal Awal </label>
+                <input type="date" placeholder="Input Username" name="username" value="{{ old('username') }}"
+                    class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
+            </div>
+            <div class="flex flex-col flex-1">
+                <label class="mb-1 text-black text-left"> Tanggal Akhir </label>
+                <input type="date" placeholder="Input Username" name="username" value="{{ old('username') }}"
+                    class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
+            </div>
+        </div>
+        <div class="flex justify-end w-full gap-3">
+            <button class="bg-success focus:outline-none text-white rounded-md py-2 w-32">
+                Export Excel
+            </button>
+            <button class="bg-primary focus:outline-none text-white rounded-md py-2 w-32">
+                Submit
+            </button>
+        </div>
+
+    </div>
     <div
         class="container-table flex flex-col gap-3 rounded rounded-md shadow-lg pt-3 border border-gray-200 overflow-x-auto">
         <h1 class="text-2xl font-semibold text-black px-3">
@@ -175,5 +203,9 @@
         </div>
     </div>
 </div>
-
+<script type="text/javascript">
+    $(function() {
+       $('#datetimepicker').datetimepicker();
+    });
+</script>
 @endsection
