@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SensorExport;
 use Illuminate\Http\Request;
 use App\Models\Sensor;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SensorController extends Controller
 {
@@ -43,15 +45,6 @@ class SensorController extends Controller
         }
     }
 
-    public function monitoringTableFilter(Request $request)
-    {
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-        $title="Monitoring LVDP - Tabel Periode: ".$start_date." Sampai ".$end_date;
-        $sensor = DB::table('sensors')->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(40);
-        return view('content.table', ['sensor' => $sensor, 'title' => $title]);
-    }
-
     public function getData($device_uuid)
     {
         $sensor = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->first();
@@ -71,10 +64,34 @@ class SensorController extends Controller
 
     public function getTable($device_uuid)
     {
-        $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
-        $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
-        $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
-        return view('monitoring.content.table', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+        $currentTime = Carbon::now()->toDateString();
+
+        $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
+        $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
+        $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
+        return view('monitoring.content.table', ['date' => $currentTime, 'line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+    }
+
+    public function getTableFilter($device_uuid, Request $request)
+    {
+        session()->flashInput($request->input());
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+        switch ($request->input('action')) {
+            case 'filter':
+                $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
+                $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
+                $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
+                return view('monitoring.content.table', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+                break;
+            case 'export':
+                return Excel::download(new SensorExport($device_uuid, $start_date, $end_date), 'export-sensor.xlsx');
+                break;
+        }
+
+        
+        
     }
 
     public function getChart($device_uuid)

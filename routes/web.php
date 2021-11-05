@@ -74,6 +74,9 @@ Route::post('/devices', [DeviceController::class, 'patchDevice'])->name('devices
 Route::get('/dashboard/{device_uuid}/sensor', [SensorController::class, 'getData']);
 Route::get('/dashboard/{device_uuid}', [SensorController::class, 'getDashboard']);
 Route::get('/table/{device_uuid}', [SensorController::class, 'getTable']);
+Route::post('/table/{device_uuid}', [SensorController::class, 'getTableFilter'])->name('filter.table');
+Route::get('/table/{device_uuid}', [SensorController::class, 'getTable']);
+
 Route::get('/chart/{device_uuid}', [SensorController::class, 'getChart']);
 Route::get('/chart/{device_uuid}/sensor', [SensorController::class, 'getDataChart']);
 

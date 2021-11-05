@@ -2,33 +2,54 @@
 @section('content')
 
 <div class="content px-32 py-3 flex flex-col gap-6">
-    <div
-        class="container-table flex flex-col gap-3 rounded rounded-md shadow-lg p-3 border border-gray-200 overflow-x-auto">
-        <h1 class="text-2xl font-semibold text-black">
-            Form Filter
-        </h1>
-        <div class="flex flex-row gap-3">
-            <div class="flex flex-col flex-1">
-                <label class="mb-1 text-black text-left"> Tanggal Awal </label>
-                <input type="date" placeholder="Input Username" name="username" value="{{ old('username') }}"
-                    class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
-            </div>
-            <div class="flex flex-col flex-1">
-                <label class="mb-1 text-black text-left"> Tanggal Akhir </label>
-                <input type="date" placeholder="Input Username" name="username" value="{{ old('username') }}"
-                    class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
-            </div>
-        </div>
-        <div class="flex justify-end w-full gap-3">
-            <button class="bg-success focus:outline-none text-white rounded-md py-2 w-32">
-                Export Excel
-            </button>
-            <button class="bg-primary focus:outline-none text-white rounded-md py-2 w-32">
-                Submit
-            </button>
-        </div>
 
+    <div class="flex flex-wrap gap-3">
+        <div
+            class="flex flex-col bg-primary w-5/12 text-white justify-center items-center px-6 rounded-md shadow-lg border-gray-200 gap-3">
+            <h1 class="font-semibold text-xl">Tanggal : </h1>
+            @if(old('start_date') !='')
+            <h1 class="font-semibold text-3xl">{{ old('start_date') }} s/d {{ old('end_date') }} </h1>
+            @else
+            <h1 class="font-semibold text-3xl"> {{ $date }} </h1>
+            @endif
+        </div>
+        <div
+            class="container-table flex flex-col gap-3 rounded rounded-md shadow-lg p-3 border border-gray-200 overflow-x-auto flex-grow h-auto">
+            <h1 class="text-2xl font-semibold text-black">
+                Form Filter
+            </h1>
+            <form method="POST" action="{{ route('filter.table', $device_id) }}">
+                @csrf
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-row gap-3">
+                        <div class="flex flex-col flex-1">
+                            <label class="mb-1 text-black text-left"> Tanggal Awal </label>
+                            <input type="date" placeholder="Input Tanggal Awal" name="start_date"
+                                value="{{ old('start_date') }}"
+                                class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
+                        </div>
+                        <div class="flex flex-col flex-1">
+                            <label class="mb-1 text-black text-left"> Tanggal Akhir </label>
+                            <input type="date" placeholder="Input Tanggal Akhir" name="end_date"
+                                value="{{ old('end_date') }}"
+                                class="px-3 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none text-black">
+                        </div>
+                    </div>
+                    <div class="flex justify-end w-full gap-3">
+                        <button type="submit" class="bg-success focus:outline-none text-white rounded-md py-2 w-32"
+                            name="action" value="export">
+                            Export Excel
+                        </button>
+                        <button type="submit" class="bg-primary focus:outline-none text-white rounded-md py-2 w-32"
+                            name="action" value="filter">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
+
     <div
         class="container-table flex flex-col gap-3 rounded rounded-md shadow-lg pt-3 border border-gray-200 overflow-x-auto">
         <h1 class="text-2xl font-semibold text-black px-3">
@@ -203,9 +224,4 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    $(function() {
-       $('#datetimepicker').datetimepicker();
-    });
-</script>
 @endsection
