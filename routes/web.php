@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\PusherNotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SensorController as SensorController;
 
@@ -83,3 +84,10 @@ Route::get('/chart/{device_uuid}/sensor', [SensorController::class, 'getDataChar
 Route::get('/hardware', function () {
     return view('hardware');
 });
+
+Route::get('/notification', function () {
+    return view('notification');
+});
+ 
+Route::get('send',[PusherNotificationController::class, 'notification']);
+?>

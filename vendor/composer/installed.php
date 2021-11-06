@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'ba670ef76c0bc21b3d2ea31feb2fc9743a895731',
+    'reference' => 'cfff62b2a58f5aab862a5eeee1aa3dab4b8b5017',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -445,7 +445,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'ba670ef76c0bc21b3d2ea31feb2fc9743a895731',
+      'reference' => 'cfff62b2a58f5aab862a5eeee1aa3dab4b8b5017',
     ),
     'laravel/sail' => 
     array (
@@ -628,6 +628,24 @@
       array (
       ),
       'reference' => '06e2ebd25f2869e54a306dda991f7db58066f7f6',
+    ),
+    'paragonie/random_compat' => 
+    array (
+      'pretty_version' => 'v9.99.100',
+      'version' => '9.99.100.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '996434e5492cb4c3edcb9168db6fbb1359ef965a',
+    ),
+    'paragonie/sodium_compat' => 
+    array (
+      'pretty_version' => 'v1.17.0',
+      'version' => '1.17.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c59cac21abbcc0df06a3dd18076450ea4797b321',
     ),
     'phar-io/manifest' => 
     array (
@@ -869,6 +887,15 @@
       array (
       ),
       'reference' => 'e4573f47750dd6c92dca5aee543fa77513cbd8d3',
+    ),
+    'pusher/pusher-php-server' => 
+    array (
+      'pretty_version' => '7.0.1',
+      'version' => '7.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7757a09209d20ff95b077ae48dc25f49a6ad94a2',
     ),
     'ralouphie/getallheaders' => 
     array (

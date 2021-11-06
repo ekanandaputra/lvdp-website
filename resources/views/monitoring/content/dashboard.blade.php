@@ -79,27 +79,31 @@
 </div>
 <script src="{{ asset('js/app.js') }}"></script>
 <script>
-    $(document).ready(function(){
-            $.ajax({
-            url: "/dashboard/"+ {{$device_id}} +"/sensor",
-            success: function( response ) {
-                $("#vR").html(response.voltage_r + " Volt");
-                $("#iR").html(response.current_r + " Ampere");
-                $("#pR").html(response.power_r + " Watt");
-                $("#sR").html(response.apparent_power_r + " VA");
-                $("#pfR").html(response.power_factor_r);
-                $("#vS").html(response.voltage_s + " Volt");
-                $("#iS").html(response.current_s + " Ampere");
-                $("#pS").html(response.power_s + " Watt");
-                $("#sS").html(response.apparent_power_s + " VA");
-                $("#pfS").html(response.power_factor_s);
-                $("#vT").html(response.voltage_t + " Volt");
-                $("#iT").html(response.current_t + " Ampere");
-                $("#pT").html(response.power_t + " Watt");
-                $("#sT").html(response.apparent_power_t + " VA");
-                $("#pfT").html(response.power_factor_t);
-            }
-            });
+    var url = $(location).attr('href');
+    var device_id = url.split('/');
+
+    var pusher = new Pusher('{{env("MIX_PUSHER_APP_KEY")}}', {
+        cluster: '{{env("PUSHER_APP_CLUSTER")}}',
+        encrypted: true
+    });
+
+    var channel = pusher.subscribe('device_'+device_id[4]);
+        channel.bind('App\\Events\\Notify', function(data) {
+            $("#vR").html(data.voltage_r + " Volt");
+            $("#iR").html(data.current_r + " Ampere");
+            $("#pR").html(data.power_r + " Watt");
+            $("#sR").html(data.apparent_power_r + " VA");
+            $("#pfR").html(data.power_factor_r);
+            $("#vS").html(data.voltage_s + " Volt");
+            $("#iS").html(data.current_s + " Ampere");
+            $("#pS").html(data.power_s + " Watt");
+            $("#sS").html(data.apparent_power_s + " VA");
+            $("#pfS").html(data.power_factor_s);
+            $("#vT").html(data.voltage_t + " Volt");
+            $("#iT").html(data.current_t + " Ampere");
+            $("#pT").html(data.power_t + " Watt");
+            $("#sT").html(data.apparent_power_t + " VA");
+            $("#pfT").html(data.power_factor_t);
     });
 </script>
 @endsection

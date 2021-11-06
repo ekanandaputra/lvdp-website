@@ -8,7 +8,7 @@ use App\Models\Sensor;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Pusher\Pusher;
 class SensorController extends Controller
 {
 
@@ -20,25 +20,68 @@ class SensorController extends Controller
 
     public function storeSensors(Request $request)
     {
+        $voltage_r = $request->voltage_r;
+        $voltage_s = $request->voltage_s;
+        $voltage_t = $request->voltage_t;
+        $current_r = abs($request->current_r);
+        $current_s = abs($request->current_s);
+        $current_t = abs($request->current_t);
+        $realpower_r = abs($request->realpower_r);
+        $realpower_s = abs($request->realpower_s);
+        $realpower_t = abs($request->realpower_t);
+        $apparent_power_r = round(abs($request->voltage_r*$request->current_r),2);
+        $apparent_power_s = round(abs($request->voltage_s*$request->current_s),2);
+        $apparent_power_t = round(abs($request->voltage_t*$request->current_t),2);
+        $power_factor_r = round(abs($request->realpower_r/($request->voltage_r*$request->current_r)),2);
+        $power_factor_s = round(abs($request->realpower_s/($request->voltage_s*$request->current_s)),2);
+        $power_factor_t = round(abs($request->realpower_t/($request->voltage_t*$request->current_t)),2);
+
+        $options = array(
+            'cluster' => env('PUSHER_APP_CLUSTER'),
+            'encrypted' => true
+        );
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'), 
+            $options
+        );
+ 
         $sensor = Sensor::create([
-            'voltage_r' => $request->voltage_r,
-            'voltage_s' => $request->voltage_s,
-            'voltage_t' => $request->voltage_t,
-            'current_r' => abs($request->current_r),
-            'current_s' => abs($request->current_s),
-            'current_t' => abs($request->current_t),
-            'power_r' =>abs($request->realpower_r),
-            'power_s' => abs($request->realpower_s),
-            'power_t' => abs($request->realpower_t),
-            'apparent_power_r' => round(abs($request->voltage_r*$request->current_r),2),
-            'apparent_power_s' => round(abs($request->voltage_s*$request->current_s),2),
-            'apparent_power_t' => round(abs($request->voltage_t*$request->current_t),2),
-            'power_factor_r' => round(abs($request->realpower_r/($request->voltage_r*$request->current_r)),2),
-            'power_factor_s' => round(abs($request->realpower_s/($request->voltage_s*$request->current_s)),2),
-            'power_factor_t' => round(abs($request->realpower_t/($request->voltage_t*$request->current_t)),2),
-            'device_id' => 1111
+            'voltage_r' => $voltage_r,
+            'voltage_s' => $voltage_s,
+            'voltage_t' => $voltage_t,
+            'current_r' => $current_r,
+            'current_s' => $current_s,
+            'current_t' => $current_t,
+            'power_r' => $realpower_r,
+            'power_s' => $realpower_s,
+            'power_t' => $realpower_t,
+            'apparent_power_r' => $apparent_power_r,
+            'apparent_power_s' => $apparent_power_s,
+            'apparent_power_t' => $apparent_power_t,
+            'power_factor_r' => $power_factor_r,
+            'power_factor_s' => $power_factor_s,
+            'power_factor_t' => $power_factor_t,
+            'device_id' => $request->device_id
         ]);
         if ($sensor) {
+            $data['voltage_r'] = $voltage_r;
+            $data['voltage_s'] = $voltage_s;
+            $data['voltage_t'] = $voltage_t;
+            $data['current_r'] = $current_r;
+            $data['current_s'] = $current_s;
+            $data['current_t'] = $current_t;
+            $data['power_r'] = $realpower_r;
+            $data['power_s'] = $realpower_s;
+            $data['power_t'] = $realpower_t;
+            $data['apparent_power_r'] = $apparent_power_r;
+            $data['apparent_power_s'] = $apparent_power_s;
+            $data['apparent_power_t'] = $apparent_power_t;
+            $data['power_factor_r'] = $power_factor_r;
+            $data['power_factor_s'] = $power_factor_s;
+            $data['power_factor_t'] = $power_factor_t;
+            $pusher->trigger('device_'.$request->device_id, 'App\\Events\\Notify', $data);    
             return 200;
         } else {
             return 500;
