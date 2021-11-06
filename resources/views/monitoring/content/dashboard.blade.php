@@ -80,7 +80,6 @@
 <script src="{{ asset('js/app.js') }}"></script>
 <script>
     $(document).ready(function(){
-        setInterval(function(){
             $.ajax({
             url: "/dashboard/"+ {{$device_id}} +"/sensor",
             success: function( response ) {
@@ -101,7 +100,6 @@
                 $("#pfT").html(response.power_factor_t);
             }
             });
-        },10000);
     });
 </script>
 @endsection
