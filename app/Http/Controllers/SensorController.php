@@ -137,6 +137,8 @@ class SensorController extends Controller
 
     public function getTableFilter($device_uuid, Request $request)
     {
+        $agent = new Agent();
+
         session()->flashInput($request->input());
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
@@ -146,7 +148,12 @@ class SensorController extends Controller
                 $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
                 $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
                 $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$start_date.' 00:00:00', $end_date.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
-                return view('monitoring.content.table', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+                if ($agent->isMobile()) {
+                    return view('monitoring.content.table_mobile', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+                }
+                else {
+                    return view('monitoring.content.table', ['line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+                }
                 break;
             case 'export':
                 return Excel::download(new SensorExport($device_uuid, $start_date, $end_date), 'export-sensor.xlsx');
@@ -159,7 +166,12 @@ class SensorController extends Controller
 
     public function getChart($device_uuid)
     {
-        return view('monitoring.content.chart', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('monitoring.content.chart_mobile', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        } else {
+            return view('monitoring.content.chart', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        }
     }
 
 }
