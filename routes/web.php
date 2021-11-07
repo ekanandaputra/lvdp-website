@@ -24,9 +24,9 @@ Route::post('/filter', [SensorController::class, 'monitoringTableFilter']);
 
 Route::get('/rollback', function() {
     $output = [];
-    \Artisan::call('db:wipe', $output);
-    \Artisan::call('migrate', $output);
-    \Artisan::call('db:seed', $output);
+    Artisan::call('db:wipe', ['--force' => true ]);
+    Artisan::call('migrate', ['--force' => true ]);
+    Artisan::call('db:seed', ['--force' => true ]);
     dd($output);
 });
 
