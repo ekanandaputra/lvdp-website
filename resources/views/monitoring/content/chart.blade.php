@@ -90,6 +90,7 @@
                     power_factor_s.push(data[i].power_factor_s);
                     power_factor_t.push(data[i].power_factor_t);
                 }
+                
                 var ctx = document.getElementById('voltage').getContext('2d');
                 var chart = new Chart(ctx, {
                     type: 'line',

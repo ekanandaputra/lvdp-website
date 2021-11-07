@@ -6,6 +6,7 @@ use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Jenssegers\Agent\Agent;
 
 class DeviceController extends Controller
 {
@@ -16,8 +17,15 @@ class DeviceController extends Controller
 
     public function getDevices()
     {
-        $devices = Device::where('user_id', Auth::user()->id)->get();
-        return view('devices', ['devices' => $devices]); 
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            $devices = Device::where('user_id', Auth::user()->id)->get();
+            return view('devices_mobile', ['devices' => $devices]); 
+        } else {
+            $devices = Device::where('user_id', Auth::user()->id)->get();
+            return view('devices', ['devices' => $devices]); 
+        }
+        
     }
 
     public function patchDevice(Request $request)

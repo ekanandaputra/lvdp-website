@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Pusher\Pusher;
+use Jenssegers\Agent\Agent;
+
 class SensorController extends Controller
 {
 
@@ -102,17 +104,35 @@ class SensorController extends Controller
 
     public function getDashboard($device_uuid)
     {
-        return view('monitoring.content.dashboard', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('monitoring.content.dashboard_mobile', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        } else {
+            return view('monitoring.content.dashboard', ['device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid)]);
+        }
     }
 
     public function getTable($device_uuid)
     {
-        $currentTime = Carbon::now()->toDateString();
+     
+        $agent = new Agent();
 
-        $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
-        $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
-        $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
-        return view('monitoring.content.table', ['date' => $currentTime, 'line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+        if ($agent->isMobile()) {
+            $currentTime = Carbon::now()->toDateString();
+
+            $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
+            $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
+            $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
+            return view('monitoring.content.table_mobile', ['date' => $currentTime, 'line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+  
+        } else {
+            $currentTime = Carbon::now()->toDateString();
+
+            $line_r = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_r');
+            $line_s = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_s');
+            $line_t = DB::table('sensors')->where('device_id', '=', $device_uuid)->whereBetween('created_at', [$currentTime.' 00:00:00', $currentTime.' 23:59:59'])->orderBy('id', 'DESC')->paginate(25, ['*'], 'line_t');
+            return view('monitoring.content.table', ['date' => $currentTime, 'line_r' => $line_r, 'line_s' => $line_s, 'line_t' => $line_t, 'device_id' => $device_uuid, 'location_name'=> $this->getLocationName($device_uuid) ]);
+        }
     }
 
     public function getTableFilter($device_uuid, Request $request)
