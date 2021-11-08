@@ -59,7 +59,7 @@ Route::get('/dashboard', function () {
     return view('content/dashboard');
 });
 Route::get('/', function () {
-    return view('content/dashboard');
+    return view('landing');
 });
 
 Route::get('/landing', function () {
